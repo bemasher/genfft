@@ -4,11 +4,11 @@ A code parser/generator to generate Go from annotated lists created with the FFT
 
 ## Install
 
-Installation of the tool is done as follows:
+Download and install the tool:
 
     go get github.com/bemasher/genfft
 
-To build the FFTW genfft tool do the following:
+Build the FFTW genfft tool:
 
     cd fftw3/genfft
     ocamlbuild -classic-display -libs unix,nums gen_notw.native gen_notw_c.native
@@ -24,7 +24,7 @@ func DFT(ri, ii, ro, io []float64) // gen_notw.native
 func DFT(xi, xo []complex128)      // gen_notw_c.native
 ```
 
-To generate an annotated transform. Do the following:
+Generate an annotated transform:
 
     N=3; gen_notw.native -n ${N} -with-istride 1 -with-ostride 1 -standalone -dump-asched dft${N}.alst | egrep "^DV?K"  >> dft${N}.alst
 
@@ -53,11 +53,11 @@ DK(KP500000000, +0.500000000000000000000000000000000000000000000);
 DK(KP866025403, +0.866025403784438646763723170752936183471402627);
 ```
 
-Generating the Go source from this transform is as follows:
+Generating the Go source from this transform:
 
     genfft dft3.alst > dft3.go
     
-For example the file `dft3.go` will contain: 
+`dft3.go` will contain:
 
 ```go
 package dft
