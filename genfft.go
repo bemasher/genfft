@@ -164,13 +164,12 @@ func main() {
 	inputScanner := bufio.NewScanner(inputFile)
 
 	var (
-		body      string
-		constants [][]string
+		expressions []Expression
+		constants   [][]string
 	)
 
 	// Regular expression matches constants.
 	constRe := regexp.MustCompile(`(DV?K)\((K[NP][\d_]+), ([+-][\d\.]+)\);`)
-	isComplex := false
 
 	// For each line in the input.
 	for idx := 0; inputScanner.Scan(); idx++ {
@@ -181,9 +180,6 @@ func main() {
 		if constRe.MatchString(line) {
 			// Append the matching groups from the constant to the constant list.
 			submatches := constRe.FindStringSubmatch(line)
-			if submatches[1] == "DVK" {
-				isComplex = true
-			}
 			constants = append(constants, submatches[2:])
 
 			// Continue so we don't try parsing this as an expression.
@@ -193,7 +189,8 @@ func main() {
 		// Parse the line and append it to the body.
 		var expr Expression
 		expr.Parse(line)
-		body += expr.String() + "\n"
+
+		expressions = append(expressions, expr)
 	}
 
 	// Lay out some boilerplate for the go formatter.
@@ -208,11 +205,18 @@ func main() {
 	source += ")\n"
 
 	// Append the function signature, body and enclosing brackets.
-	if isComplex {
-		source += "func DFT(xi, xo []complex128) {\n" + body + "}"
+	// Note: I'm probably going to regret hardcoding this comparison.
+	if expressions[0].Expr[1].Lit == "xi[0]" {
+		source += "func DFT(xi, xo []complex128) {\n"
 	} else {
-		source += "func DFT(ri, ii, ro, io []float64) {\n" + body + "}"
+		source += "func DFT(ri, ii, ro, io []float64) {\n"
 	}
+
+	for _, expr := range expressions {
+		source += expr.String() + "\n"
+	}
+
+	source += "}"
 
 	// Format the source.
 	formatted, err := format.Source([]byte(source))
