@@ -11,8 +11,6 @@ all: $(N)
 	./genfft dft/dft$@/dft.alst > dft/dft$@/dft.go
 	cp dft_test.go.src dft/dft$@/dft_test.go
 
-%.go: %.alst
-
 test:
 	go test -v ./...
 
