@@ -26,69 +26,78 @@ func DFT(xi, xo []complex128)      // gen_notw_c.native
 
 To generate an annotated transform. Do the following:
 
-    N=5; gen_notw.native -n ${N} -with-istride 1 -with-ostride 1 -standalone -dump-asched dft${N}.alst | egrep "^DV?K"  >> dft${N}.alst
+    N=3; gen_notw.native -n ${N} -with-istride 1 -with-ostride 1 -standalone -dump-asched dft${N}.alst | egrep "^DV?K"  >> dft${N}.alst
 
-This will generate and write the transform's operations and constants to the file `dft5.alst`. Generating the Go source from this transform is as follows:
+This will generate and write the transform's operations and constants to the file `dft3.alst`:
 
-    genfft dft5.alst > dft5.go
+```
+(:= T1 ri[0])
+(:= T10 ii[0])
+(:= T2 ri[1])
+(:= T3 ri[2])
+(:= T4 (+ T2 T3))
+(:= T9 (* KP866025403 (+ T3 (- T2))))
+(:= T6 ii[1])
+(:= T7 ii[2])
+(:= T8 (* KP866025403 (+ T6 (- T7))))
+(:= T11 (+ T6 T7))
+(:= ro[0] (+ T1 T4))
+(:= io[0] (+ T10 T11))
+(:= T5 (+ T1 (- (* KP500000000 T4))))
+(:= ro[2] (+ T5 (- T8)))
+(:= ro[1] (+ T5 T8))
+(:= T12 (+ T10 (- (* KP500000000 T11))))
+(:= io[1] (+ T9 T12))
+(:= io[2] (+ T12 (- T9)))
+DK(KP500000000, +0.500000000000000000000000000000000000000000000);
+DK(KP866025403, +0.866025403784438646763723170752936183471402627);
+```
+
+Generating the Go source from this transform is as follows:
+
+    genfft dft3.alst > dft3.go
     
-For example the file `dft5.go` will contain: 
+For example the file `dft3.go` will contain: 
 
 ```go
-package main
+package dft
+
+const N = 3
 
 const (
 	I           = 1i
-	KP250000000 = +0.250000000000000000000000000000000000000000000
-	KP587785252 = +0.587785252292473129168705954639072768597652438
-	KP951056516 = +0.951056516295153572116439333379382143405698634
-	KP559016994 = +0.559016994374947424102293417182819058860154590
+	KP500000000 = +0.500000000000000000000000000000000000000000000
+	KP866025403 = +0.866025403784438646763723170752936183471402627
 )
 
 func DFT(ri, ii, ro, io []float64) {
 	T1 := ri[0]
-	T24 := ii[0]
+	T10 := ii[0]
 	T2 := ri[1]
-	T3 := ri[4]
+	T3 := ri[2]
 	T4 := T2 + T3
-	T5 := ri[2]
-	T6 := ri[3]
-	T7 := T5 + T6
-	T8 := T4 + T7
-	T29 := T5 - T6
-	T9 := KP559016994 * (T4 - T7)
-	T28 := T2 - T3
-	T12 := ii[1]
-	T13 := ii[4]
-	T21 := T12 + T13
-	T15 := ii[2]
-	T16 := ii[3]
-	T22 := T15 + T16
-	T14 := T12 - T13
-	T25 := T21 + T22
-	T17 := T15 - T16
-	T23 := KP559016994 * (T21 - T22)
-	ro[0] = T1 + T8
-	io[0] = T24 + T25
-	T18 := (KP951056516 * T14) + (KP587785252 * T17)
-	T20 := (KP951056516 * T17) - (KP587785252 * T14)
-	T10 := T1 - (KP250000000 * T8)
-	T11 := T9 + T10
-	T19 := T10 - T9
-	ro[4] = T11 - T18
-	ro[3] = T19 + T20
-	ro[1] = T11 + T18
-	ro[2] = T19 - T20
-	T30 := (KP951056516 * T28) + (KP587785252 * T29)
-	T31 := (KP951056516 * T29) - (KP587785252 * T28)
-	T26 := T24 - (KP250000000 * T25)
-	T27 := T23 + T26
-	T32 := T26 - T23
-	io[1] = T27 - T30
-	io[3] = T32 - T31
-	io[4] = T30 + T27
-	io[2] = T31 + T32
+	T9 := KP866025403 * (T3 - T2)
+	T6 := ii[1]
+	T7 := ii[2]
+	T8 := KP866025403 * (T6 - T7)
+	T11 := T6 + T7
+	ro[0] = T1 + T4
+	io[0] = T10 + T11
+	T5 := T1 - (KP500000000 * T4)
+	ro[2] = T5 - T8
+	ro[1] = T5 + T8
+	T12 := T10 - (KP500000000 * T11)
+	io[1] = T9 + T12
+	io[2] = T12 - T9
 }
 ```
 
 It is safe for both transform types to pass the same arrays to both input and output. Doing so will overwrite the contents of the input array.
+
+A Makefile is provided to generate/test/benchmark transforms of lengths 2 through 16:
+
+```bash
+make       # Generate transforms and code in  dft/
+make test  # Run tests
+make bench # Run benchmarks
+```
