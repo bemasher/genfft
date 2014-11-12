@@ -26,6 +26,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -142,6 +143,35 @@ func (expr *Expression) parse(line string) (idx int) {
 	return
 }
 
+func (expr *Expression) TransformLength() uint {
+	return expr.transformLength() + 1
+}
+
+func (expr *Expression) transformLength() (max uint) {
+	if strings.HasSuffix(expr.Lit, "]") {
+		n, err := strconv.ParseUint(expr.Lit[3:len(expr.Lit)-1], 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		return uint(n)
+	}
+
+	for _, child := range expr.Expr {
+		max = Max(max, child.transformLength())
+	}
+
+	return
+}
+
+func Max(a ...uint) (max uint) {
+	for _, i := range a {
+		if i > max {
+			max = i
+		}
+	}
+	return max
+}
+
 func init() {
 	log.SetFlags(log.Lshortfile)
 }
@@ -194,7 +224,13 @@ func main() {
 	}
 
 	// Lay out some boilerplate for the go formatter.
-	source := "package main\n"
+	source := "package dft\n"
+
+	var max uint
+	for _, expr := range expressions {
+		max = Max(max, expr.TransformLength())
+	}
+	source += fmt.Sprintf("const N = %d\n\n", max)
 
 	// Append the constants we parsed including the imaginary constant.
 	source += "const (\n"
