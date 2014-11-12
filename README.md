@@ -96,7 +96,7 @@ It is safe for both transform types to pass the same arrays to both input and ou
 
 A Makefile is provided to generate/test/benchmark transforms of lengths 2 through 16:
 
-```bash
+```
 make       # Generate transforms and code in  dft/
 make test  # Run tests
 make bench # Run benchmarks
