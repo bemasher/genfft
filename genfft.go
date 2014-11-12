@@ -24,6 +24,7 @@ import (
 	"go/format"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -148,7 +149,7 @@ func init() {
 func main() {
 	// Print usage if user didn't pass the right number of arguments.
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: parse [filename]")
+		fmt.Printf("Usage: %s [filename]\n", filepath.Base(os.Args[0]))
 		os.Exit(1)
 	}
 
