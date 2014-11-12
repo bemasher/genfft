@@ -19,6 +19,8 @@ There are two flavors of the genfft tool which this project supports. Both compu
 
 ```go
 func DFT(ri, ii, ro, io []float64) // gen_notw.native
+```
+```go
 func DFT(xi, xo []complex128)      // gen_notw_c.native
 ```
 
