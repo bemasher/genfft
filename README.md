@@ -90,8 +90,9 @@ Tests compare output of a naive DFT to output of the generated DFT's. DFT's pass
 
 A benchmark is also provided to compare performance of the various transforms.
 
+11th Gen Intel(R) Core(TM) i5-11600K @ 3.90GHz + 32GB DDR4:
+
 ```
-$ go test -run=^$ -bench .
 goos: windows
 goarch: amd64
 pkg: github.com/bemasher/genfft/dft
@@ -104,4 +105,20 @@ BenchmarkCmplxDFT/In_Place_Cmplx_DFT_N=12-12            59896080      19.69 ns/o
 BenchmarkCmplxDFT/Out_of_Cmplx_Place_DFT_N=12-12        60725056      19.08 ns/op    628.92 MB/s      0 B/op     0 allocs/op
 PASS
 ok      github.com/bemasher/genfft/dft  7.316s
+```
+
+Raspberry Pi 2 Model B Rev 1.1:
+
+```
+goos: linux
+goarch: arm
+pkg: github.com/bemasher/genfft/dft
+BenchmarkFloatDFT/Naive_DFT_N=12-4         	                   15980    74300   ns/op     0.16 MB/s    192 B/op    1 allocs/op
+BenchmarkFloatDFT/In_Place_Float_DFT_N=12-4                  1972201      606.0 ns/op    19.80 MB/s      0 B/op    0 allocs/op
+BenchmarkFloatDFT/Out_of_Place_Float_DFT_N=12-4              1959711      611.5 ns/op    19.62 MB/s      0 B/op    0 allocs/op
+BenchmarkCmplxDFT/Naive_Cmplx_DFT_N=12-4                       16048    74256   ns/op     0.16 MB/s    192 B/op    1 allocs/op
+BenchmarkCmplxDFT/In_Place_Cmplx_DFT_N=12-4                  1490419      803.4 ns/op    14.94 MB/s      0 B/op    0 allocs/op
+BenchmarkCmplxDFT/Out_of_Cmplx_Place_DFT_N=12-4              1476600      806.1 ns/op    14.89 MB/s      0 B/op    0 allocs/op
+PASS
+ok      github.com/bemasher/genfft/dft	11.639s
 ```
