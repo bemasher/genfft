@@ -1,6 +1,6 @@
 # genfft
 
-A tool to generate Go from annotated lists created with the FFTW tool genfft.
+A tool to generate short, hard-coded DFT's in Go from annotated lists created with the FFTW tool genfft.
 
 [![AGPL License](http://img.shields.io/badge/license-AGPL-blue.svg?style=flat)](http://www.gnu.org/licenses/agpl-3.0.html)
 
